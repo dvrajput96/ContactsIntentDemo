@@ -80,6 +80,12 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
         notifyDataSetChanged();
     }
 
+    public void removeAt(int position) {
+        clsContactsList.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, clsContactsList.size());
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.ivPersonImage)

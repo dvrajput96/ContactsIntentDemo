@@ -79,8 +79,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 // MyDatabase myDatabase = Room.inMemoryDatabaseBuilder(MainActivity.this, MyDatabase.class).build(); // Get an Instance of Database class //defined above
-                MyDatabase myDatabase1 = MyDatabase.getDatabase(MainActivity.this);
-                ContactsDao contactsDao = myDatabase1.contactsDao();// Get DAO object
+                MyDatabase myDatabase = MyDatabase.getDatabase(MainActivity.this);
+                ContactsDao contactsDao = myDatabase.contactsDao();// Get DAO object
                 clsContactsList = contactsDao.getAll();
                 contactsAdapter.add(clsContactsList);
                 recyclerViewContacts.setAdapter(contactsAdapter);
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                     if (contactPhoto != null) {
                         clsContacts.setPic(contactPhoto);
                     }
-                    clsContactsList.add(0, clsContacts);
+                    clsContactsList.add(clsContacts);
 
                     // Now you have the phone number
                     contactsAdapter.add(clsContactsList);
@@ -183,9 +183,16 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // FIRE ZE MISSILES!
-                        clsContactsList.remove(position);
-                        contactsAdapter.notifyItemRemoved(position);
-                        contactsAdapter.notifyItemRangeChanged(position, clsContactsList.size());
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                MyDatabase myDatabase = MyDatabase.getDatabase(MainActivity.this);
+                                ContactsDao contactsDao = myDatabase.contactsDao();// Get DAO object
+                                contactsAdapter.removeAt(position);
+                                contactsDao.delete(clsContactsList.get(position));
+                            }
+                        }).start();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

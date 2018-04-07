@@ -25,7 +25,7 @@ public class ClsContacts implements Serializable {
    /* @ColumnInfo(name = "image_url")
     private Uri photo; */
 
-    @ColumnInfo(name = "image_url1")
+    @ColumnInfo(name = "image_url")
     private String pic;
 
     public int getUid() {
