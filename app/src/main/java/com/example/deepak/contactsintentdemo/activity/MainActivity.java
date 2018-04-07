@@ -14,10 +14,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.deepak.contactsintentdemo.R;
 import com.example.deepak.contactsintentdemo.adapter.ContactsAdapter;
+import com.example.deepak.contactsintentdemo.database.Dao.ContactsDao;
+import com.example.deepak.contactsintentdemo.database.MyDatabase;
 import com.example.deepak.contactsintentdemo.model.ClsContacts;
 
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         clsContactsList = new ArrayList<>();
         contactsAdapter = new ContactsAdapter(clsContactsList, MainActivity.this);
         initializeRecyclerView();
+        showSavedDataFromRoomDatabase();
 
         btnAddContacts.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +72,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void showSavedDataFromRoomDatabase() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // MyDatabase myDatabase = Room.inMemoryDatabaseBuilder(MainActivity.this, MyDatabase.class).build(); // Get an Instance of Database class //defined above
+                MyDatabase myDatabase1 = MyDatabase.getDatabase(MainActivity.this);
+                ContactsDao contactsDao = myDatabase1.contactsDao();// Get DAO object
+                clsContactsList = contactsDao.getAll();
+                contactsAdapter.add(clsContactsList);
+                recyclerViewContacts.setAdapter(contactsAdapter);
+            }
+        }).start();
     }
 
     private void openContacts() {
@@ -111,17 +127,36 @@ public class MainActivity extends AppCompatActivity {
                     clsContacts.setContactName(contactName);
                     clsContacts.setContactNumber(contactNumber);
                     if (contactPhoto != null) {
-                        clsContacts.setPhoto(Uri.parse(contactPhoto));
+                        clsContacts.setPic(contactPhoto);
                     }
                     clsContactsList.add(0, clsContacts);
 
                     // Now you have the phone number
                     contactsAdapter.add(clsContactsList);
+                    insertDataIntoRoomDatabase(clsContacts);
                     recyclerViewContacts.setAdapter(contactsAdapter);
 
                 }
                 break;
         }
+    }
+
+    /**
+     * @param clsContacts insert data into room database
+     */
+
+    private void insertDataIntoRoomDatabase(final ClsContacts clsContacts) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // MyDatabase myDatabase = Room.inMemoryDatabaseBuilder(MainActivity.this, MyDatabase.class).build(); // Get an Instance of Database class //defined above
+                MyDatabase myDatabase1 = MyDatabase.getDatabase(MainActivity.this);
+                ContactsDao contactsDao = myDatabase1.contactsDao();// Get DAO object
+                // contactsDao.insertAll(clsContactsList);
+                contactsDao.insert(clsContacts);
+            }
+        }).start();
+
     }
 
 
@@ -139,12 +174,12 @@ public class MainActivity extends AppCompatActivity {
      */
 
     public void onLongClick(final int position) {
-       // Toast.makeText(this, "" + position, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, "" + position, Toast.LENGTH_SHORT).show();
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Are you sure?");
         builder.setTitle("Delete");
-                builder.setCancelable(false)
+        builder.setCancelable(false)
                 .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // FIRE ZE MISSILES!
@@ -161,8 +196,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         // Create the AlertDialog object and return it
-         builder.create();
-         builder.show();
+        builder.create();
+        builder.show();
 
     }
 }

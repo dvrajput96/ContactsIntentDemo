@@ -1,6 +1,7 @@
 package com.example.deepak.contactsintentdemo.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -55,8 +56,8 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
             holder.txtPersonContactNumber.setText("");
         }
         holder.txtPersonContactNumber.setText(clsContacts.getContactNumber());
-        if (clsContacts.getPhoto() != null) {
-            holder.ivPersonImage.setImageURI(clsContacts.getPhoto());
+        if (clsContacts.getPic() != null) {
+            holder.ivPersonImage.setImageURI(Uri.parse(clsContacts.getPic()));
         } else {
             holder.ivPersonImage.setImageResource(R.drawable.ic_person_black_24dp);
         }
@@ -76,7 +77,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
 
     public void add(List<ClsContacts> clsContactsList) {
         this.clsContactsList = clsContactsList;
-        notifyItemInserted(0);
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
