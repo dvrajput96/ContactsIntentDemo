@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
                 ContactsDao contactsDao = myDatabase.contactsDao();// Get DAO object
                 clsContactsList = contactsDao.getAll();
                 contactsAdapter.add(clsContactsList);
+
                 recyclerViewContacts.setAdapter(contactsAdapter);
             }
         }).start();
@@ -171,9 +173,10 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * @param position long click on recyclerview to delete the contact through it's position
+     * @param uid
      */
 
-    public void onLongClick(final int position) {
+    public void onLongClick(final int position, final int uid) {
         // Toast.makeText(this, "" + position, Toast.LENGTH_SHORT).show();
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -190,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
                                 MyDatabase myDatabase = MyDatabase.getDatabase(MainActivity.this);
                                 ContactsDao contactsDao = myDatabase.contactsDao();// Get DAO object
                                 contactsAdapter.removeAt(position);
-                                contactsDao.delete(clsContactsList.get(position));
+                                contactsDao.delete(uid);
                             }
                         }).start();
                     }

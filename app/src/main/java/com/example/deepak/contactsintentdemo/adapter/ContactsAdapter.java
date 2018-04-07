@@ -44,7 +44,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
-        ClsContacts clsContacts = clsContactsList.get(position);
+        final ClsContacts clsContacts = clsContactsList.get(position);
         if (clsContacts.getContactName() != null) {
             holder.txtPersonName.setText(clsContacts.getContactName());
         } else {
@@ -64,7 +64,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                mainActivity.onLongClick(position);
+                mainActivity.onLongClick(position,clsContacts.getUid());
                 return false;
             }
         });
